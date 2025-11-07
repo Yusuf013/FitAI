@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'pages/home_page.dart'; // als je al een eigen pagina hebt gemaakt
+import 'pages/main_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const FitAIApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class FitAIApp extends StatelessWidget {
+  const FitAIApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'AI Fitness App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomePage(), // 👈 jouw eigen pagina
+      home: MainPage(),
     );
   }
 }
