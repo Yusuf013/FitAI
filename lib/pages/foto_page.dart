@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'dart:io';
 
 class FotoPage extends StatefulWidget {
   const FotoPage({super.key});
@@ -19,10 +20,7 @@ class _FotoPageState extends State<FotoPage> {
   }
 
   Future<void> _initCamera() async {
-    // verkrijg alle beschikbare camera's
     final cameras = await availableCameras();
-
-    // selecteer de voorcamera
     final frontCamera = cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,
     );
@@ -31,16 +29,121 @@ class _FotoPageState extends State<FotoPage> {
     await _cameraController!.initialize();
 
     if (!mounted) return;
-
-    setState(() {
-      _isCameraInitialized = true;
-    });
+    setState(() => _isCameraInitialized = true);
   }
 
   @override
   void dispose() {
     _cameraController?.dispose();
     super.dispose();
+  }
+
+  Future<void> _takePicture() async {
+    try {
+      final picture = await _cameraController!.takePicture();
+      if (!mounted) return;
+
+      // 👉 Open moderne preview pop-up
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (context) {
+          return _buildPhotoPreview(context, picture.path);
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Fout bij foto maken: $e')));
+    }
+  }
+
+  Widget _buildPhotoPreview(BuildContext context, String imagePath) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Color(0xFF141E1B),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 16),
+          Container(
+            width: 60,
+            height: 5,
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Foto Preview',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.file(
+                  File(imagePath),
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Bevestig je foto om verder te gaan',
+            style: TextStyle(color: Colors.white70, fontSize: 15),
+          ),
+          const SizedBox(height: 20),
+
+          // 👇 Bevestig knop
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.pop(context); // Sluit de pop-up
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Foto bevestigd!'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+              icon: const Icon(Icons.check, color: Colors.white),
+              label: const Text(
+                'Bevestigen',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF7BA17B),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 14,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -56,9 +159,6 @@ class _FotoPageState extends State<FotoPage> {
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 20),
-
-                // uitlegtekst
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
@@ -71,10 +171,7 @@ class _FotoPageState extends State<FotoPage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // camera-preview
                 AspectRatio(
                   aspectRatio: _cameraController!.value.aspectRatio,
                   child: ClipRRect(
@@ -82,25 +179,9 @@ class _FotoPageState extends State<FotoPage> {
                     child: CameraPreview(_cameraController!),
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // knop om foto te nemen
                 ElevatedButton.icon(
-                  onPressed: () async {
-                    try {
-                      final picture = await _cameraController!.takePicture();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Foto opgeslagen: ${picture.path}'),
-                        ),
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Fout bij foto maken: $e')),
-                      );
-                    }
-                  },
+                  onPressed: _takePicture,
                   icon: const Icon(Icons.camera_alt, color: Colors.white),
                   label: const Text(
                     'Neem foto',
