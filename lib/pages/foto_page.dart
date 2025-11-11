@@ -61,7 +61,7 @@ class _FotoPageState extends State<FotoPage> {
 
   Widget _buildPhotoPreview(BuildContext context, String imagePath) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
+      height: MediaQuery.of(context).size.height * 0.95,
       decoration: const BoxDecoration(
         color: Color(0xFF141E1B),
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
@@ -101,15 +101,11 @@ class _FotoPageState extends State<FotoPage> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Bevestig je foto om verder te gaan',
-            style: TextStyle(color: Colors.white70, fontSize: 15),
-          ),
           const SizedBox(height: 20),
 
           // 👇 Bevestig knop
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            padding: const EdgeInsets.only(left: 30, right: 30, bottom: 35),
             child: ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context); // Sluit de pop-up
@@ -172,13 +168,25 @@ class _FotoPageState extends State<FotoPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                AspectRatio(
-                  aspectRatio: _cameraController!.value.aspectRatio,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: CameraPreview(_cameraController!),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    width:
+                        MediaQuery.of(context).size.width *
+                        0.9, // 90% van schermbreedte
+                    height:
+                        MediaQuery.of(context).size.height *
+                        0.55, // 55% van schermhoogte
+                    child: AspectRatio(
+                      aspectRatio: _cameraController!.value.aspectRatio,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: CameraPreview(_cameraController!),
+                      ),
+                    ),
                   ),
                 ),
+
                 const SizedBox(height: 30),
                 ElevatedButton.icon(
                   onPressed: _takePicture,
