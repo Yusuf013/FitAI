@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:ai_fitness_app/services/ai_service.dart';
 import 'package:ai_fitness_app/pages/resultaat_page.dart';
 
@@ -40,19 +41,17 @@ class _FotoPageState extends State<FotoPage> {
     super.dispose();
   }
 
+  // 📸 FOTO MAKEN MET CAMERA
   Future<void> _takePicture() async {
     try {
       final picture = await _cameraController!.takePicture();
       if (!mounted) return;
 
-      // 👉 Open moderne preview pop-up
       showModalBottomSheet(
         context: context,
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
-        builder: (context) {
-          return _buildPhotoPreview(context, picture.path);
-        },
+        builder: (context) => _buildPhotoPreview(context, picture.path),
       );
     } catch (e) {
       ScaffoldMessenger.of(
@@ -61,6 +60,22 @@ class _FotoPageState extends State<FotoPage> {
     }
   }
 
+  // 🖼 FOTO UPLOADEN UIT GALERIJ
+  Future<void> _pickFromGallery() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+
+    if (picked == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => _buildPhotoPreview(context, picked.path),
+    );
+  }
+
+  // 📸 PREVIEW POP-UP
   Widget _buildPhotoPreview(BuildContext context, String imagePath) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.95,
@@ -89,6 +104,7 @@ class _FotoPageState extends State<FotoPage> {
             ),
           ),
           const SizedBox(height: 20),
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -102,32 +118,28 @@ class _FotoPageState extends State<FotoPage> {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+
           const SizedBox(height: 20),
 
-          // 👇 Bevestig knop
+          // ✔ BEVESTIGEN KNOP
           Padding(
             padding: const EdgeInsets.only(left: 30, right: 30, bottom: 35),
             child: ElevatedButton.icon(
               onPressed: () async {
                 Navigator.pop(context); // sluit preview popup
 
-                // LAAD MODEL
                 final ai = AIService();
                 await ai.loadModel();
 
-                // DOE PREDICTIE
                 final result = await ai.predict(imagePath);
 
-                // GEEN SNACKBAR MAAR NAVIGATIE
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ResultaatPage(
-                      exerciseName: result["label"], // ✔ oefening-naam
-                      confidence: result["confidence"], // ✔ betrouwbaarheid
-                      imageAssetPath:
-                          "assets/images/${result["label"]}.png", // ✔ afbeelding
+                      exerciseName: result["label"],
+                      confidence: result["confidence"],
+                      imageAssetPath: "assets/images/${result["label"]}.png",
                     ),
                   ),
                 );
@@ -158,6 +170,7 @@ class _FotoPageState extends State<FotoPage> {
     );
   }
 
+  // 📱 HOOFDPAGINA UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,6 +180,7 @@ class _FotoPageState extends State<FotoPage> {
         title: const Text('Camera oefening'),
         centerTitle: true,
       ),
+
       body: _isCameraInitialized
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -183,27 +197,25 @@ class _FotoPageState extends State<FotoPage> {
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 30),
+
+                // CAMERA PREVIEW
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SizedBox(
-                    width:
-                        MediaQuery.of(context).size.width *
-                        0.9, // 90% van schermbreedte
-                    height:
-                        MediaQuery.of(context).size.height *
-                        0.55, // 55% van schermhoogte
-                    child: AspectRatio(
-                      aspectRatio: _cameraController!.value.aspectRatio,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: CameraPreview(_cameraController!),
-                      ),
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: CameraPreview(_cameraController!),
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 30),
+
+                // 📸 BUTTON — FOTO MAKEN
                 ElevatedButton.icon(
                   onPressed: _takePicture,
                   icon: const Icon(Icons.camera_alt, color: Colors.white),
@@ -217,6 +229,32 @@ class _FotoPageState extends State<FotoPage> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF7BA17B),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 14,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // 🖼 BUTTON — FOTO UPLOADEN
+                ElevatedButton.icon(
+                  onPressed: _pickFromGallery,
+                  icon: const Icon(Icons.photo, color: Colors.white),
+                  label: const Text(
+                    'Upload foto',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF5C7E5C),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
