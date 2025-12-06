@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
+import 'package:ai_fitness_app/services/ai_service.dart';
+import 'package:ai_fitness_app/pages/resultaat_page.dart';
 
 class FotoPage extends StatefulWidget {
   const FotoPage({super.key});
@@ -107,12 +109,26 @@ class _FotoPageState extends State<FotoPage> {
           Padding(
             padding: const EdgeInsets.only(left: 30, right: 30, bottom: 35),
             child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pop(context); // Sluit de pop-up
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('✅ Foto bevestigd!'),
-                    behavior: SnackBarBehavior.floating,
+              onPressed: () async {
+                Navigator.pop(context); // sluit preview popup
+
+                // LAAD MODEL
+                final ai = AIService();
+                await ai.loadModel();
+
+                // DOE PREDICTIE
+                final result = await ai.predict(imagePath);
+
+                // GEEN SNACKBAR MAAR NAVIGATIE
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ResultaatPage(
+                      exerciseName: result["label"], // ✔ oefening-naam
+                      confidence: result["confidence"], // ✔ betrouwbaarheid
+                      imageAssetPath:
+                          "assets/images/${result["label"]}.png", // ✔ afbeelding
+                    ),
                   ),
                 );
               },
