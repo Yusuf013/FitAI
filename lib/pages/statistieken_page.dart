@@ -13,11 +13,6 @@ class StatistiekenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0E1412),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF141E1B),
-        title: const Text("Statistieken"),
-        centerTitle: true,
-      ),
 
       body: FutureBuilder<Map<String, dynamic>>(
         future: StatsService.loadStats(),
@@ -31,22 +26,60 @@ class StatistiekenPage extends StatelessWidget {
           final stats = snapshot.data!;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Model Prestaties",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
+                Center(
+                  child: Column(
+                    children: const [
+                      Text(
+                        "FitAI",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        "Statistieken",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "krijg hier meer inzicht hoe accuraat de\n"
+                        "gebruikte AI-model is",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                      ),
+                      SizedBox(height: 40),
+
+                      // Titel van eerste sectie
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.circle,
+                            size: 10,
+                            color: Color(0xFFC7E8A9),
+                          ),
+                          SizedBox(width: 8),
+                        ],
+                      ),
+
+                      SizedBox(height: 20),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 30),
-
-                // ===== ACCURACY BAR =====
                 if (stats.containsKey("accuracy"))
                   AccuracyProgressList(
                     accuracy: Map<String, dynamic>.from(stats["accuracy"]),
@@ -54,7 +87,6 @@ class StatistiekenPage extends StatelessWidget {
 
                 const SizedBox(height: 25),
 
-                // ===== LOSS GRAPH =====
                 if (stats.containsKey("loss_curve"))
                   LossCurveChart(
                     values: List<double>.from(stats["loss_curve"]),
@@ -62,7 +94,6 @@ class StatistiekenPage extends StatelessWidget {
 
                 const SizedBox(height: 25),
 
-                // ===== image donut =====
                 if (stats.containsKey("dataset_distribution"))
                   DatasetDonutChart(
                     values: Map<String, dynamic>.from(
