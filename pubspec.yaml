@@ -31,6 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  fl_chart: ^0.69.0
+
   image_picker: ^1.0.7
 
   tflite_flutter: ^0.12.1
@@ -76,6 +78,7 @@ flutter:
   assets:
     - assets/images/
     - assets/model/model.tflite
+    - assets/data/model_stats.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

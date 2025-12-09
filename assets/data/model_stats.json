@@ -1,0 +1,27 @@
+{
+    "accuracy": {
+        "cable_fly": 0.85,
+        "incline_benchpress": 0.81,
+        "machine_pulldown": 0.83,
+        "pull_up": 0.92,
+        "romanian_deadlift": 1.0,
+        "squats": 0.88
+    },
+    "loss_curve": [
+        1.0,
+        0.83,
+        0.61,
+        0.48,
+        0.39,
+        0.34,
+        0.33
+    ],
+    "dataset_distribution": {
+        "cable_fly": 50,
+        "incline_benchpress": 51,
+        "machine_pulldown": 44,
+        "pull_up": 50,
+        "romanian_deadlift": 50,
+        "squats": 50
+    }
+}
