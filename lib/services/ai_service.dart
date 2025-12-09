@@ -61,12 +61,12 @@ class AIService {
     }
 
     List<String> labels = [
-      'pull_up',
-      'squat',
-      'cable_fly',
-      'bench_press',
-      'pulldown',
-      'deadlift',
+      'Cable fy',
+      'Incline benchpress',
+      'Machine pulldown',
+      'Pull ups',
+      'Romanian deadlift',
+      'Squats',
     ];
 
     return {"label": labels[bestIndex], "confidence": maxConfidence};
