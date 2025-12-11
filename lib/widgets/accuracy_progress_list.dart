@@ -1,11 +1,36 @@
 import 'package:flutter/material.dart';
 
-class AccuracyProgressList extends StatelessWidget {
+class AccuracyProgressList extends StatefulWidget {
   final Map<String, dynamic> accuracy;
 
   const AccuracyProgressList({super.key, required this.accuracy});
 
-  // Kleine helper om namen netjes te maken
+  @override
+  State<AccuracyProgressList> createState() => _AccuracyProgressListState();
+}
+
+class _AccuracyProgressListState extends State<AccuracyProgressList>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1600),
+    );
+
+    _controller.forward(); // start animatie
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   String formatLabel(String key) {
     return key
         .replaceAll("_", " ")
@@ -17,10 +42,11 @@ class AccuracyProgressList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entries = widget.accuracy.entries.toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Titel + bullet
         Row(
           children: const [
             Icon(Icons.circle, size: 10, color: Color(0xFFC7E8A9)),
@@ -38,63 +64,86 @@ class AccuracyProgressList extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        // Lijst met progress bars
-        ...accuracy.entries.map((entry) {
-          final name = formatLabel(entry.key.toLowerCase());
-          final value = (entry.value as num).toDouble();
+        ...List.generate(entries.length, (index) {
+          final entry = entries[index];
+          final label = formatLabel(entry.key.toLowerCase());
+          final targetValue = (entry.value as num).toDouble();
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              children: [
-                // Label
-                SizedBox(
-                  width: 120,
-                  child: Text(
-                    name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+          // Unieke delay per bar
+          final animation = CurvedAnimation(
+            parent: _controller,
+            curve: Interval(
+              index * 0.1,
+              0.5 + index * 0.1,
+              curve: Curves.easeOut,
+            ),
+          );
 
-                // Progress bar
-                Expanded(
-                  child: Container(
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF3C4A45),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: FractionallySizedBox(
-                      widthFactor: value,
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFB6EB8E), Color(0xFF7F8F85)],
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              final animatedValue = targetValue * animation.value;
+
+              return Opacity(
+                opacity: animation.value,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    children: [
+                      // Label
+                      SizedBox(
+                        width: 120,
+                        child: Text(
+                          label,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
-                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                    ),
+
+                      // Animated progress bar
+                      Expanded(
+                        child: Container(
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3C4A45),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: FractionallySizedBox(
+                            widthFactor: animatedValue,
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFB6EB8E),
+                                    Color(0xFF7F8F85),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      // Animated percentage
+                      Text(
+                        "${(animatedValue * 100).toInt()}%",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
-                const SizedBox(width: 10),
-
-                // Percentage
-                Text(
-                  "${(value * 100).toInt()}%",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           );
         }),
       ],

@@ -88,7 +88,7 @@ class StatistiekenPage extends StatelessWidget {
                 const SizedBox(height: 25),
 
                 if (stats.containsKey("loss_curve"))
-                  LossCurveChart(
+                  LossCurveAnimated(
                     values: List<double>.from(stats["loss_curve"]),
                   ),
 
