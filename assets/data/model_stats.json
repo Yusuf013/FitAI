@@ -1,46 +1,135 @@
 {
     "accuracy": {
-        "cable_flyes": 0.86,
-        "incline_benchpress": 0.82,
-        "machine_pulldown": 0.83,
-        "pullup": 0.92,
-        "romanian_deadlift": 1.0,
-        "squats": 0.89
+        "cable_flyes": 0.9,
+        "incline_benchpress": 0.6,
+        "machine_pulldown": 0.7,
+        "pullup": 0.8,
+        "romanian_deadlift": 0.8,
+        "squats": 0.4
+    },
+    "precision": {
+        "cable_flyes": 0.69,
+        "incline_benchpress": 0.75,
+        "machine_pulldown": 0.78,
+        "pullup": 0.89,
+        "romanian_deadlift": 0.73,
+        "squats": 0.4
+    },
+    "recall": {
+        "cable_flyes": 0.9,
+        "incline_benchpress": 0.6,
+        "machine_pulldown": 0.7,
+        "pullup": 0.8,
+        "romanian_deadlift": 0.8,
+        "squats": 0.4
+    },
+    "support": {
+        "cable_flyes": 10,
+        "incline_benchpress": 10,
+        "machine_pulldown": 10,
+        "pullup": 10,
+        "romanian_deadlift": 10,
+        "squats": 10
     },
     "loss_curve": [
-        1.82446,
-        1.69203,
-        1.62159,
-        1.33373,
-        1.44704,
-        1.30489,
-        1.17807,
-        1.24767,
-        1.11483,
-        1.10269,
-        1.09333,
-        0.99577,
-        1.03874,
-        0.98081,
-        0.95838,
-        1.001,
-        0.95377,
-        0.96702,
-        1.01883,
-        0.92499,
-        0.95763,
-        0.96738,
-        0.87746,
-        0.95465,
-        0.88757,
-        0.9161
+        1.88597,
+        1.68453,
+        1.40746,
+        1.30347,
+        1.19515,
+        1.14628,
+        1.10164,
+        1.08756,
+        1.07335,
+        1.0326,
+        1.00794,
+        1.00531,
+        0.98404,
+        0.99687,
+        0.97061,
+        0.98268,
+        0.999,
+        0.95675,
+        0.9619,
+        0.94854,
+        0.94552,
+        0.95388,
+        0.95994,
+        0.93796,
+        0.95924,
+        0.93586,
+        0.97506,
+        0.9496,
+        0.94784,
+        0.95658,
+        0.94812
     ],
     "dataset_distribution": {
-        "cable_flyes": 50,
-        "incline_benchpress": 51,
-        "machine_pulldown": 44,
-        "pullup": 50,
-        "romanian_deadlift": 50,
-        "squats": 50
+        "cable_flyes": 75,
+        "incline_benchpress": 75,
+        "machine_pulldown": 75,
+        "pullup": 75,
+        "romanian_deadlift": 75,
+        "squats": 75
+    },
+    "confusion_matrix": {
+        "labels": [
+            "cable_flyes",
+            "incline_benchpress",
+            "machine_pulldown",
+            "pullup",
+            "romanian_deadlift",
+            "squats"
+        ],
+        "matrix": [
+            [
+                9,
+                1,
+                0,
+                0,
+                0,
+                0
+            ],
+            [
+                2,
+                6,
+                0,
+                0,
+                0,
+                2
+            ],
+            [
+                0,
+                1,
+                7,
+                1,
+                0,
+                1
+            ],
+            [
+                0,
+                0,
+                1,
+                8,
+                0,
+                1
+            ],
+            [
+                0,
+                0,
+                0,
+                0,
+                8,
+                2
+            ],
+            [
+                2,
+                0,
+                1,
+                0,
+                3,
+                4
+            ]
+        ]
     }
 }

@@ -5,6 +5,7 @@ import 'package:ai_fitness_app/services/stats_service.dart';
 import 'package:ai_fitness_app/widgets/accuracy_progress_list.dart';
 import 'package:ai_fitness_app/widgets/loss_curve_chart.dart';
 import 'package:ai_fitness_app/widgets/dataset_donut_chart.dart';
+import 'package:ai_fitness_app/widgets/confusion_matrix_heatmap.dart';
 
 class StatistiekenPage extends StatelessWidget {
   const StatistiekenPage({super.key});
@@ -64,16 +65,7 @@ class StatistiekenPage extends StatelessWidget {
                       SizedBox(height: 40),
 
                       // Titel van eerste sectie
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.circle,
-                            size: 10,
-                            color: Color(0xFFC7E8A9),
-                          ),
-                          SizedBox(width: 8),
-                        ],
-                      ),
+                      Row(children: [SizedBox(width: 8)]),
 
                       SizedBox(height: 20),
                     ],
@@ -83,6 +75,31 @@ class StatistiekenPage extends StatelessWidget {
                 if (stats.containsKey("accuracy"))
                   AccuracyProgressList(
                     accuracy: Map<String, dynamic>.from(stats["accuracy"]),
+                    precision: stats.containsKey("precision")
+                        ? Map<String, dynamic>.from(stats["precision"])
+                        : null,
+                    recall: stats.containsKey("recall")
+                        ? Map<String, dynamic>.from(stats["recall"])
+                        : null,
+                    support: stats.containsKey("support")
+                        ? Map<String, dynamic>.from(stats["support"])
+                        : null,
+                  ),
+
+                const SizedBox(height: 25),
+
+                const SizedBox(height: 25),
+
+                if (stats.containsKey("confusion_matrix"))
+                  ConfusionMatrixHeatmap(
+                    labels: List<String>.from(
+                      stats["confusion_matrix"]["labels"],
+                    ),
+                    matrix: List<List<dynamic>>.from(
+                      (stats["confusion_matrix"]["matrix"] as List).map(
+                        (row) => List<dynamic>.from(row),
+                      ),
+                    ),
                   ),
 
                 const SizedBox(height: 25),
