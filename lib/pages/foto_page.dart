@@ -16,10 +16,20 @@ class _FotoPageState extends State<FotoPage> {
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
 
+  final AIService _ai = AIService();
+  bool _isModelReady = false;
+
   @override
   void initState() {
     super.initState();
     _initCamera();
+    _initAI();
+  }
+
+  Future<void> _initAI() async {
+    await _ai.loadModel();
+    if (!mounted) return;
+    setState(() => _isModelReady = true);
   }
 
   Future<void> _initCamera() async {
@@ -128,10 +138,14 @@ class _FotoPageState extends State<FotoPage> {
               onPressed: () async {
                 Navigator.pop(context); // sluit preview popup
 
-                final ai = AIService();
-                await ai.loadModel();
+                if (!_isModelReady) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Model wordt nog geladen...')),
+                  );
+                  return;
+                }
 
-                final result = await ai.predict(imagePath);
+                final result = await _ai.predict(imagePath);
 
                 Navigator.push(
                   context,
